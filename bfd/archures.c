@@ -545,6 +545,8 @@ DESCRIPTION
 .#define bfd_mach_ck803		5
 .#define bfd_mach_ck807		6
 .#define bfd_mach_ck810		7
+.  bfd_arch_mrisc32,  {* MRISC32.  *}
+.#define bfd_mach_mrisc32	1
 .  bfd_arch_last
 .  };
 */
@@ -635,6 +637,7 @@ extern const bfd_arch_info_type bfd_mn10200_arch;
 extern const bfd_arch_info_type bfd_mn10300_arch;
 extern const bfd_arch_info_type bfd_moxie_arch;
 extern const bfd_arch_info_type bfd_ft32_arch;
+extern const bfd_arch_info_type bfd_mrisc32_arch;
 extern const bfd_arch_info_type bfd_msp430_arch;
 extern const bfd_arch_info_type bfd_mt_arch;
 extern const bfd_arch_info_type bfd_nds32_arch;
@@ -727,6 +730,7 @@ static const bfd_arch_info_type * const bfd_archures_list[] =
     &bfd_mn10300_arch,
     &bfd_moxie_arch,
     &bfd_ft32_arch,
+    &bfd_mrisc32_arch,
     &bfd_msp430_arch,
     &bfd_mt_arch,
     &bfd_nds32_arch,

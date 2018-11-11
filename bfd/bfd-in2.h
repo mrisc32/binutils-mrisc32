@@ -2485,6 +2485,8 @@ enum bfd_architecture
 #define bfd_mach_ck803         5
 #define bfd_mach_ck807         6
 #define bfd_mach_ck810         7
+  bfd_arch_mrisc32,  /* MRISC32.  */
+#define bfd_mach_mrisc32       1
   bfd_arch_last
   };
 
@@ -6793,6 +6795,21 @@ assembler and not (currently) written to any object files.  */
 
 /* S12Z relocations.  */
   BFD_RELOC_S12Z_OPR,
+
+/* MRISC32 Relocations.  */
+  BFD_RELOC_MRISC32_PCREL_15,
+  BFD_RELOC_MRISC32_PCREL_21X4,
+  BFD_RELOC_MRISC32_PCREL_HI21,
+  BFD_RELOC_MRISC32_PCREL_LO11,
+  BFD_RELOC_MRISC32_PCREL_LO9X4,
+  BFD_RELOC_MRISC32_I15,
+  BFD_RELOC_MRISC32_I21,
+  BFD_RELOC_MRISC32_IHI21,
+  BFD_RELOC_MRISC32_IHIO21,
+  BFD_RELOC_MRISC32_ILO11,
+  BFD_RELOC_MRISC32_ILO9X4,
+  BFD_RELOC_MRISC32_I21X4,
+
   BFD_RELOC_UNUSED };
 
 typedef enum bfd_reloc_code_real bfd_reloc_code_real_type;

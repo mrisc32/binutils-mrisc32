@@ -133,6 +133,7 @@
 #include "elf/mn10300.h"
 #include "elf/moxie.h"
 #include "elf/mt.h"
+#include "elf/mrisc32.h"
 #include "elf/msp430.h"
 #include "elf/nds32.h"
 #include "elf/nfp.h"
@@ -838,6 +839,7 @@ guess_is_rela (unsigned int e_machine)
     case EM_MN10300:
     case EM_CYGNUS_MN10300:
     case EM_MOXIE:
+    case EM_MRISC32:
     case EM_MSP430:
     case EM_MSP430_OLD:
     case EM_MT:
@@ -1381,6 +1383,10 @@ dump_relocations (Filedata *          filedata,
 
 	case EM_MOXIE:
 	  rtype = elf_moxie_reloc_type (type);
+	  break;
+
+	case EM_MRISC32:
+	  rtype = elf_mrisc32_reloc_type (type);
 	  break;
 
 	case EM_MSP430:
@@ -2542,6 +2548,7 @@ get_machine_name (unsigned e_machine)
     case EM_CYGNUS_FRV:		return "Fujitsu FR-V";
     case EM_S12Z:               return "Freescale S12Z";
     case EM_CSKY:		return "C-SKY";
+    case EM_MRISC32:            return "MRISC32";
 
     default:
       snprintf (buff, sizeof (buff), _("<unknown>: 0x%x"), e_machine);
@@ -12644,6 +12651,8 @@ is_32bit_abs_reloc (Filedata * filedata, unsigned int reloc_type)
       return reloc_type == 1; /* R_MN10300_32.  */
     case EM_MOXIE:
       return reloc_type == 1; /* R_MOXIE_32.  */
+    case EM_MRISC32:
+      return reloc_type == 1; /* R_MRISC32_32.  */
     case EM_MSP430_OLD:
     case EM_MSP430:
       return reloc_type == 1; /* R_MSP430_32 or R_MSP320_ABS32.  */
