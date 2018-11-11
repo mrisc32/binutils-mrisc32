@@ -440,6 +440,8 @@
    architecture was derived.  */
 #define EM_CSKY_OLD		EM_MCORE
 
+#define EM_MRISC32              0xc001  /* MRISC32 */
+
 /* See the above comment before you add a new EM_* value here.  */
 
 /* Values for e_version.  */
