@@ -1216,6 +1216,7 @@ case $cpu-$vendor in
 			| mn10200 | mn10300 \
 			| moxie \
 			| mt \
+			| mrisc32 \
 			| msp430 \
 			| nds32 | nds32le | nds32be \
 			| nfp \
