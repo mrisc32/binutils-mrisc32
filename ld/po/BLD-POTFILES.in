@@ -140,6 +140,7 @@ eelf32microblaze.c
 eelf32microblazeel.c
 eelf32mipswindiss.c
 eelf32moxie.c
+eelf32mrisc32.c
 eelf32mt.c
 eelf32or1k.c
 eelf32or1k_linux.c
