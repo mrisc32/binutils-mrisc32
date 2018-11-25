@@ -140,7 +140,7 @@ _is_scalar (const mrisc32_opc_info_t *opcode, const unsigned vec_mode,
   vc = MR32_VC_NA;
   if (vec_mode == 2)
     vc = opcode->vc2;
-  else if (vec_mode == 3)
+  else if (vec_mode == 3 || vec_mode == 1)
     vc = opcode->vc3;
 
   /* Is the given argument number (1..3) a scalar argument?  */
