@@ -329,6 +329,8 @@ case ${generic_target} in
     
   mt-*-elf)				fmt=elf bfd_gas=yes ;;
 
+  mrisc32-*-*)				fmt=elf ;;
+
   msp430-*-*)				fmt=elf ;;
 
   nds32-*-elf*)				fmt=elf ;;
