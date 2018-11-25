@@ -1,0 +1,5 @@
+SCRIPT_NAME=mrisc32
+TEMPLATE_NAME=generic
+EXTRA_EM_FILE=genelf
+OUTPUT_FORMAT="elf32-mrisc32"
+ARCH=mrisc32
