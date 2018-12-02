@@ -36,7 +36,10 @@ TAGS.sub
 .local.vimrc
 .lvimrc
 
-.clang-format
+# The official .gitignore ignores .clang-format, but for the MRISC32 branch we
+# want to use a consistent clang-format configuration. Revert this commit to
+# get back the orignal behavior.
+# .clang-format
 
 .gdbinit
 .gdb_history
