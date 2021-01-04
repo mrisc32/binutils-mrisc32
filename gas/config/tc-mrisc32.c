@@ -60,13 +60,17 @@ const pseudo_typeS md_pseudo_table[] =
 enum options
 {
   OPTION_RELAX = OPTION_MD_BASE,
-  OPTION_NO_RELAX
+  OPTION_NO_RELAX,
+  OPTION_COMPRESS,
+  OPTION_NO_COMPRESS
 };
 
 struct option md_longopts[] =
 {
   {"mrelax", no_argument, NULL, OPTION_RELAX},
   {"mno-relax", no_argument, NULL, OPTION_NO_RELAX},
+  {"mcompress", no_argument, NULL, OPTION_COMPRESS},
+  {"mno-compress", no_argument, NULL, OPTION_NO_COMPRESS},
   {NULL, no_argument, NULL, 0}
 };
 size_t md_longopts_size = sizeof (md_longopts);
@@ -75,10 +79,15 @@ const char *md_shortopts = "";
 
 /* Internal state.  */
 static bfd_boolean s_mrisc32_relax = TRUE;
+static bfd_boolean s_mrisc32_compress = FALSE;
 static htab_t s_opc_type_a_map;
 static htab_t s_opc_type_b_map[4];
 static htab_t s_opc_type_c_map;
 static htab_t s_opc_type_d_map;
+
+static bfd_boolean s_can_compress_prev_insn = FALSE;
+static uint32_t s_prev_compressed_iword;
+static const mrisc32_opc_info_t *s_prev_opcode;
 
 #define MAX_OP_STR_LEN 10
 static char s_op_str[MAX_OP_STR_LEN + 1];
@@ -135,6 +144,183 @@ struct mr32_operand_t
   int reg_no;
   expressionS exp;
 };
+
+static bfd_boolean
+_can_use_signed_imm5 (uint32_t x)
+{
+  int32_t value = (int32_t) x;
+  return value >= -16 && value <= 15;
+}
+
+static bfd_boolean
+_can_use_unsigned_imm5x4 (uint32_t x)
+{
+  return (x & 3u) == 0u && (x >> 2) <= 31u;
+}
+
+static bfd_boolean
+_can_use_signed_imm10x4 (uint32_t x)
+{
+  int32_t value = (int32_t) x;
+  return (x & 3u) == 0u && value >= -2048 && value <= 2044;
+}
+
+/* This is the main logic for converting a 32-bit instruction into a
+   compressed 14-bit instruction. If the compression was successful,
+   the function returns TRUE and returns the compressed instruction in
+   the 14 lower bits of IWORD.  */
+static bfd_boolean
+_compress_insn (const mrisc32_opc_info_t *opcode,
+		struct mr32_operand_t *op1,
+		struct mr32_operand_t *op2,
+		struct mr32_operand_t *op3,
+		uint32_t *iword)
+{
+  uint32_t copcode;
+  uint32_t cop1;
+  uint32_t cop2;
+
+  /* We can't compress instructions that have operand modifiers,
+     register scaling or use vector registers.  */
+  if (op1->type == MR32_OT_VREG
+      || op1->modifier != MR32_MOD_NONE
+      || op1->reg_scale != MR32_RS_NONE
+      || op2->type == MR32_OT_VREG
+      || op2->modifier != MR32_MOD_NONE
+      || op2->reg_scale != MR32_RS_NONE
+      || op3->type == MR32_OT_VREG
+      || op3->modifier != MR32_MOD_NONE
+      || op3->reg_scale != MR32_RS_NONE)
+    return FALSE;
+
+  if (opcode->format == MR32_FMT_A)
+    {
+      /* Canonicalize the operand order. Don't swap operands for SUB.  */
+      if (opcode->op != 0x16 && (op3->reg_no == op1->reg_no || op3->reg_no == 0))
+        {
+          struct mr32_operand_t *tmp = op3;
+          op3 = op2;
+          op2 = tmp;
+        }
+
+      /* Special case: MOV (alias for OR).  */
+      if (opcode->op == 0x10 && op2->reg_no == 0)
+        {
+          *iword = (0 << 10) | (op1->reg_no << 5) | op3->reg_no;
+          return TRUE;
+        }
+
+      if (op2->reg_no != op1->reg_no)
+        return FALSE;
+      cop1 = op1->reg_no;
+      cop2 = op3->reg_no;
+
+      switch (opcode->op)
+        {
+        case 0x10:  /* OR  */
+          copcode = 1;
+          break;
+        case 0x12:  /* AND  */
+          copcode = 2;
+          break;
+        case 0x14:  /* XOR  */
+          copcode = 3;
+          break;
+        case 0x15:  /* ADD  */
+          copcode = 4;
+          break;
+        case 0x16:  /* SUB  */
+          /* TODO(m): Check that the operand order is correct here.  */
+          copcode = 5;
+          break;
+        default:
+          return FALSE;
+        }
+    }
+  else if (opcode->format == MR32_FMT_C)
+    {
+      cop1 = op1->reg_no;
+      if (op3->exp.X_op != O_constant)
+        return FALSE;
+      cop2 = (uint32_t) op3->exp.X_add_number;
+
+      /* Special case: stack operations.  */
+      if (op2->reg_no == 28)  /* SP  */
+        {
+          switch (opcode->op)
+            {
+            case 0x03:  /* LDW  */
+              if (!_can_use_unsigned_imm5x4 (cop2))
+                return FALSE;
+              copcode = 13;
+              break;
+            case 0x0b:  /* STW  */
+              if (!_can_use_unsigned_imm5x4 (cop2))
+                return FALSE;
+              copcode = 14;
+              break;
+            case 0x15:  /* ADD  */
+              if (op2->reg_no != op1->reg_no || !_can_use_signed_imm10x4 (cop2))
+                return FALSE;
+              copcode = 15;
+              cop1 = (cop2 >> 7) & 0x1fu;
+              cop2 = (cop2 >> 2) & 0x1fu;
+              break;
+            default:
+              return FALSE;
+            }
+        }
+      else if (op2->reg_no == op1->reg_no)
+        {
+          switch (opcode->op)
+            {
+            case 0x15:  /* ADD  */
+              if (!_can_use_signed_imm5 (cop2))
+                return FALSE;
+              copcode = 12;
+              break;
+            case 0x21:  /* ASR  */
+              copcode = 9;
+              break;
+            case 0x22:  /* LSL  */
+              copcode = 10;
+              break;
+            case 0x23:  /* LSR  */
+              copcode = 11;
+              break;
+            default:
+              return FALSE;
+            }
+        }
+      else
+        return FALSE;
+    }
+  else if (opcode->format == MR32_FMT_D)
+    {
+      cop1 = op1->reg_no;
+      if (op2->exp.X_op != O_constant)
+        return FALSE;
+      cop2 = (uint32_t) op2->exp.X_add_number;
+
+      switch (opcode->op)
+        {
+        case 0x0a:  /* LDLI  */
+          if (!_can_use_signed_imm5 (cop2))
+            return FALSE;
+          copcode = 8;
+          break;
+        default:
+          return FALSE;
+        }
+    }
+  else
+    {
+      return FALSE;
+    }
+
+  *iword = (copcode << 10) | ((cop1 & 0x1f) << 5) | (cop2 & 0x1f);
+  return TRUE;
+}
 
 static void
 _clear_operand (struct mr32_operand_t *operand)
@@ -744,6 +930,9 @@ _emit_instruction (const char *op_str, struct mr32_operand_t *op1,
   int where;
   bfd_reloc_code_real_type reloc_type;
 
+  bfd_boolean can_compress;
+  uint32_t compressed_iword = 0u;
+
   /* Reserve space for the instruction (it's always 4 bytes = 32 bits).  */
   char *p = frag_more (4);
 
@@ -787,6 +976,30 @@ _emit_instruction (const char *op_str, struct mr32_operand_t *op1,
     {
       as_bad (_ ("unsupported operands"));
       return;
+    }
+
+  /* Can we compress?  */
+  if (s_mrisc32_compress)
+    {
+      can_compress = _compress_insn (opcode, op1, op2, op3, &compressed_iword);
+      if (can_compress && s_can_compress_prev_insn)
+        {
+          s_can_compress_prev_insn = FALSE;
+
+          /* Bake the two compressed instructions into a single word.  */
+          iword = 0xe0000000
+                  | (s_prev_compressed_iword << 14)
+                  | compressed_iword;
+
+          /* TODO(m): Overwrite the previous instruction word and return. */
+          as_warn (_("Compressed 2 insns: %04x:%04x=>%08x (%s:%s)"),
+                   s_prev_compressed_iword, compressed_iword, iword,
+                   s_prev_opcode->name, opcode->name);
+        }
+      else
+          s_can_compress_prev_insn = can_compress;
+      s_prev_compressed_iword = compressed_iword;
+      s_prev_opcode = opcode;
     }
 
   /* Default: No reloc.  */
@@ -1404,6 +1617,14 @@ md_parse_option (int c, const char *arg ATTRIBUTE_UNUSED)
       s_mrisc32_relax = FALSE;
       break;
 
+    case OPTION_COMPRESS:
+      s_mrisc32_compress = TRUE;
+      break;
+
+    case OPTION_NO_COMPRESS:
+      s_mrisc32_compress = FALSE;
+      break;
+
     default:
       return 0;
     }
@@ -1418,6 +1639,8 @@ md_show_usage (FILE *stream)
 MRISC32 options:\n\
   -mrelax                 enable relax (default)\n\
   -mno-relax              disable relax\n\
+  -mcompress              enable instruction compression\n\
+  -mno-compress           disable instruction compression (default)\n\
 "));
 }
 
