@@ -7,9 +7,9 @@
 
 _start:
     nop
-    ldi     s3, #34
+    ldli    s3, #34
     ldhi    s4, #0xffff0000
-    ldhio   s5, #0x0123ffff
+    ldhi    s5, #0x0123ffff
     or      s1, z, #7-2*4  ; -1
 
     or      s6, z, #loop+7
@@ -20,7 +20,7 @@ _start:
     or      s7, s7, 0x12345678@lo
 
     ldw     s9, pc, #loop@pc
-    ldi     s8, #hello_len
+    ldli    s8, #hello_len
     ldhi    s9, #hello@hi
     add     s9, s9, #hello@lo
 

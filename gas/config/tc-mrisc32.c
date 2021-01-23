@@ -930,11 +930,11 @@ _emit_instruction (const char *op_str, struct mr32_operand_t *op1,
 	    break;
 
 	  case MR32_MOD_LO:
-	    reloc_type = BFD_RELOC_MRISC32_ILO11;
+	    reloc_type = BFD_RELOC_MRISC32_ILO12;
 	    break;
 
 	  case MR32_MOD_PCLO:
-	    reloc_type = BFD_RELOC_MRISC32_PCREL_LO11;
+	    reloc_type = BFD_RELOC_MRISC32_PCREL_LO12;
 	    pc_rel = 1;
 	    break;
 
@@ -994,28 +994,18 @@ _emit_instruction (const char *op_str, struct mr32_operand_t *op1,
 	    break;
 
 	  case MR32_MODE_IMM21HI:
-	    if (reloc_operand->modifier == MR32_MOD_NONE ||
-		reloc_operand->modifier == MR32_MOD_HI)
+	    if (reloc_operand->modifier == MR32_MOD_NONE)
 	      {
 		reloc_type = BFD_RELOC_MRISC32_IHI21;
 	      }
+	    else if (reloc_operand->modifier == MR32_MOD_HI)
+	      {
+		reloc_type = BFD_RELOC_MRISC32_IHI20;
+	      }
 	    else if (reloc_operand->modifier == MR32_MOD_PCHI)
 	      {
-		reloc_type = BFD_RELOC_MRISC32_PCREL_HI21;
+		reloc_type = BFD_RELOC_MRISC32_PCREL_HI20;
 		pc_rel = 1;
-	      }
-	    else
-	      {
-		as_bad (_ ("unsupported modifier"));
-		return;
-	      }
-	    break;
-
-	  case MR32_MODE_IMM21HIO:
-	    if (reloc_operand->modifier == MR32_MOD_NONE ||
-		reloc_operand->modifier == MR32_MOD_HI)
-	      {
-		reloc_type = BFD_RELOC_MRISC32_IHIO21;
 	      }
 	    else
 	      {
@@ -1031,7 +1021,7 @@ _emit_instruction (const char *op_str, struct mr32_operand_t *op1,
 	      }
 	    else if (reloc_operand->modifier == MR32_MOD_LO)
 	      {
-		reloc_type = BFD_RELOC_MRISC32_ILO9X4;
+		reloc_type = BFD_RELOC_MRISC32_ILO10X4;
 	      }
 	    else if (reloc_operand->modifier == MR32_MOD_PC)
 	      {
@@ -1040,7 +1030,7 @@ _emit_instruction (const char *op_str, struct mr32_operand_t *op1,
 	      }
 	    else if (reloc_operand->modifier == MR32_MOD_PCLO)
 	      {
-		reloc_type = BFD_RELOC_MRISC32_PCREL_LO9X4;
+		reloc_type = BFD_RELOC_MRISC32_PCREL_LO10X4;
 		pc_rel = 1;
 	      }
 	    else
@@ -1099,13 +1089,7 @@ _can_use_imm21lo (const uint32_t x)
 static bfd_boolean
 _can_use_imm21hi (const uint32_t x)
 {
-  return (x & 0x000007ffu) == 0u;
-}
-
-static bfd_boolean
-_can_use_imm21hio (const uint32_t x)
-{
-  return (x & 0x000007ffu) == 0x000007ffu;
+  return ((x & 0xfffu) == 0u) || ((x & 0xfffu) == 0xfffu);
 }
 
 static bfd_boolean
@@ -1139,8 +1123,6 @@ _expand_alias (const char *op_str, struct mr32_operand_t *op1,
 		_emit_instruction ("ldli", op1, op2, op3, fold, pack_mode, sel_mode);
 	      else if (_can_use_imm21hi (value))
 		_emit_instruction ("ldhi", op1, op2, op3, fold, pack_mode, sel_mode);
-	      else if (_can_use_imm21hio (value))
-		_emit_instruction ("ldhio", op1, op2, op3, fold, pack_mode, sel_mode);
 	      else
 		{
 		  op2->modifier = MR32_MOD_HI;
@@ -1451,41 +1433,46 @@ md_apply_fix (fixS *fixP, valueT *valP, segT seg ATTRIBUTE_UNUSED)
     case BFD_RELOC_MRISC32_I14:
     case BFD_RELOC_MRISC32_PCREL_14:
       word = (uint32_t) bfd_getl32 (buf);
-      word |= (uint32_t) (val & 0x3fff);
+      word |= (uint32_t) (val & 0x3fffu);
       bfd_putl32 ((bfd_vma) word, buf);
       break;
 
     case BFD_RELOC_MRISC32_IHI14:
       word = (uint32_t) bfd_getl32 (buf);
-      word |= (uint32_t) ((val >> 18) & 0x3fff) | 0x4000;
+      word |= (uint32_t) ((val >> 18) & 0x3fffu) | 0x4000;
       bfd_putl32 ((bfd_vma) word, buf);
       break;
 
     case BFD_RELOC_MRISC32_I21:
       word = (uint32_t) bfd_getl32 (buf);
-      word |= (uint32_t) (val & 0x1fffff);
+      word |= (uint32_t) (val & 0x1fffffu);
       bfd_putl32 ((bfd_vma) word, buf);
       break;
 
     case BFD_RELOC_MRISC32_IHI21:
-    case BFD_RELOC_MRISC32_IHIO21:
-    case BFD_RELOC_MRISC32_PCREL_HI21:
       word = (uint32_t) bfd_getl32 (buf);
-      word |= (uint32_t) ((val >> 11) & 0x1fffff);
+      word |= (uint32_t) ((val >> 11) & 0x1fffffu);
       bfd_putl32 ((bfd_vma) word, buf);
       break;
 
-    case BFD_RELOC_MRISC32_ILO11:
-    case BFD_RELOC_MRISC32_PCREL_LO11:
+    case BFD_RELOC_MRISC32_IHI20:
+    case BFD_RELOC_MRISC32_PCREL_HI20:
       word = (uint32_t) bfd_getl32 (buf);
-      word |= (uint32_t) (val & 0x7ff);
+      word |= (uint32_t) ((val >> 11) & 0x1ffffeu);
       bfd_putl32 ((bfd_vma) word, buf);
       break;
 
-    case BFD_RELOC_MRISC32_ILO9X4:
-    case BFD_RELOC_MRISC32_PCREL_LO9X4:
+    case BFD_RELOC_MRISC32_ILO12:
+    case BFD_RELOC_MRISC32_PCREL_LO12:
       word = (uint32_t) bfd_getl32 (buf);
-      word |= (uint32_t) ((val >> 2) & 0x1ff);
+      word |= (uint32_t) (val & 0xfffu);
+      bfd_putl32 ((bfd_vma) word, buf);
+      break;
+
+    case BFD_RELOC_MRISC32_ILO10X4:
+    case BFD_RELOC_MRISC32_PCREL_LO10X4:
+      word = (uint32_t) bfd_getl32 (buf);
+      word |= (uint32_t) ((val >> 2) & 0x3ff);
       bfd_putl32 ((bfd_vma) word, buf);
       break;
 

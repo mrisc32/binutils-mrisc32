@@ -517,7 +517,7 @@ const mrisc32_opc_info_t mrisc32_opc_type_d_info[16] =
   /* Load immediate.  */
   { "ldli",     MR32_VC_NA,  MR32_VC_NA,  MR32_FT_NONE,  0x0a, 0, MR32_FMT_D, MR32_MODE_IMM21 },
   { "ldhi",     MR32_VC_NA,  MR32_VC_NA,  MR32_FT_NONE,  0x0b, 0, MR32_FMT_D, MR32_MODE_IMM21HI },
-  { "ldhio",    MR32_VC_NA,  MR32_VC_NA,  MR32_FT_NONE,  0x0c, 0, MR32_FMT_D, MR32_MODE_IMM21HIO },
+  { "?",        MR32_VC_NA,  MR32_VC_NA,  MR32_FT_NONE,  0x0c, 0, 0, 0 },
 
   /* PC hi.  */
   { "addpchi",  MR32_VC_NA,  MR32_VC_NA,  MR32_FT_NONE,  0x0d, 0, MR32_FMT_D, MR32_MODE_IMM21HI },

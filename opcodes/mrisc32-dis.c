@@ -86,13 +86,7 @@ _get_imm21 (const uint32_t iw)
 static int32_t
 _get_imm21hi (const uint32_t iw)
 {
-  return (int32_t) (iw << 11);
-}
-
-static int32_t
-_get_imm21hio (const uint32_t iw)
-{
-  return (int32_t) ((iw << 11) | 0x000007ff);
+  return (int32_t) ((iw << 11) | ((iw & 1) ? 0x7ff : 0));
 }
 
 /* Get opcode suffix.  */
@@ -408,11 +402,6 @@ print_insn_mrisc32 (bfd_vma addr, struct disassemble_info *info)
 	  break;
 	case MR32_MODE_IMM21HI:
 	  imm_value = _get_imm21hi (iword);
-	  fpr (stream, "%s, #%d", arg1, imm_value);
-	  _print_hex_comment (info, imm_value);
-	  break;
-	case MR32_MODE_IMM21HIO:
-	  imm_value = _get_imm21hio (iword);
 	  fpr (stream, "%s, #%d", arg1, imm_value);
 	  _print_hex_comment (info, imm_value);
 	  break;

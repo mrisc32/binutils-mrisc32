@@ -89,49 +89,49 @@ static reloc_howto_type elf_mrisc32_howto_table_rel[] =
          0x001fffff,		/* dst_mask */
          TRUE),			/* pcrel_offset */
 
-  /* High 21 bits of PC relative relocation.  */
-  HOWTO (R_MRISC32_PCREL_HI21,	/* type */
+  /* High 20 bits of PC relative relocation.  */
+  HOWTO (R_MRISC32_PCREL_HI20,	/* type */
          11,			/* rightshift */
          2,			/* size (0=1, 1=2, 2=4, 3=0, 4=8, 5=3) */
-         21,			/* bitsize */
+         20,			/* bitsize */
          TRUE,			/* pc_relative */
          0,			/* bitpos */
-         complain_overflow_signed, /* complain_on_overflow */
+         complain_overflow_dont, /* complain_on_overflow */
          bfd_elf_generic_reloc, /* special_function */
-         "R_MRISC32_PCREL_HI21", /* name */
+         "R_MRISC32_PCREL_HI20", /* name */
          FALSE,			/* partial_inplace */
          0,			/* src_mask */
-         0x001fffff,		/* dst_mask */
+         0x001ffffe,		/* dst_mask */
          TRUE),			/* pcrel_offset */
 
-  /* Low 11 bits of PC relative relocation.  */
-  HOWTO (R_MRISC32_PCREL_LO11,	/* type */
+  /* Low 12 bits of PC relative relocation.  */
+  HOWTO (R_MRISC32_PCREL_LO12,	/* type */
          0,			/* rightshift */
          2,			/* size (0=1, 1=2, 2=4, 3=0, 4=8, 5=3) */
-         11,			/* bitsize */
+         12,			/* bitsize */
          TRUE,			/* pc_relative */
          0,			/* bitpos */
          complain_overflow_dont, /* complain_on_overflow */
          bfd_elf_generic_reloc, /* special_function */
-         "R_MRISC32_PCREL_LO11", /* name */
+         "R_MRISC32_PCREL_LO12", /* name */
          FALSE,			/* partial_inplace */
          0,			/* src_mask */
-         0x000007ff,		/* dst_mask */
+         0x00000fff,		/* dst_mask */
          TRUE),			/* pcrel_offset */
 
-  /* Low 9+2 bits of PC relative relocation.  */
-  HOWTO (R_MRISC32_PCREL_LO9X4,	/* type */
+  /* Low 10+2 bits of PC relative relocation.  */
+  HOWTO (R_MRISC32_PCREL_LO10X4,	/* type */
          2,			/* rightshift */
          2,			/* size (0=1, 1=2, 2=4, 3=0, 4=8, 5=3) */
-         9,			/* bitsize */
+         10,			/* bitsize */
          TRUE,			/* pc_relative */
          0,			/* bitpos */
          complain_overflow_dont, /* complain_on_overflow */
          bfd_elf_generic_reloc, /* special_function */
-         "R_MRISC32_PCREL_LO9X4", /* name */
+         "R_MRISC32_PCREL_LO10X4", /* name */
          FALSE,			/* partial_inplace */
          0,			/* src_mask */
-         0x000001ff,		/* dst_mask */
+         0x000003ff,		/* dst_mask */
          TRUE),			/* pcrel_offset */
 
   /* 14 bits immediate relocation.  */
@@ -194,49 +194,49 @@ static reloc_howto_type elf_mrisc32_howto_table_rel[] =
          0x001fffff,		/* dst_mask */
          FALSE),		/* pcrel_offset */
 
-  /* 21 high bits of a 32-bit value, with one-filled low 11 bits.  */
-  HOWTO (R_MRISC32_IHIO21,	/* type */
+  /* 20 high bits immediate relocation.  */
+  HOWTO (R_MRISC32_IHI20,	/* type */
          11,			/* rightshift */
          2,			/* size (0=1, 1=2, 2=4, 3=0, 4=8, 5=3) */
-         21,			/* bitsize */
+         20,			/* bitsize */
          FALSE,			/* pc_relative */
          0,			/* bitpos */
          complain_overflow_dont, /* complain_on_overflow */
          bfd_elf_generic_reloc, /* special_function */
-         "R_MRISC32_IHIO21",	/* name */
+         "R_MRISC32_IHI20",	/* name */
          FALSE,			/* partial_inplace */
          0,			/* src_mask */
-         0x001fffff,		/* dst_mask */
+         0x001ffffe,		/* dst_mask */
          FALSE),		/* pcrel_offset */
 
-  /* 11 low bits immediate relocation.  */
-  HOWTO (R_MRISC32_ILO11,	/* type */
+  /* 12 low bits immediate relocation.  */
+  HOWTO (R_MRISC32_ILO12,	/* type */
          0,			/* rightshift */
          2,			/* size (0=1, 1=2, 2=4, 3=0, 4=8, 5=3) */
-         11,			/* bitsize */
+         12,			/* bitsize */
          FALSE,			/* pc_relative */
          0,			/* bitpos */
          complain_overflow_dont, /* complain_on_overflow */
          bfd_elf_generic_reloc, /* special_function */
-         "R_MRISC32_ILO11",	/* name */
+         "R_MRISC32_ILO12",	/* name */
          FALSE,			/* partial_inplace */
          0,			/* src_mask */
-         0x000007ff,		/* dst_mask */
+         0x00000fff,		/* dst_mask */
          FALSE),		/* pcrel_offset */
 
-  /* 9+2 low bits immediate relocation.  */
-  HOWTO (R_MRISC32_ILO9X4,	/* type */
+  /* 10+2 low bits immediate relocation.  */
+  HOWTO (R_MRISC32_ILO10X4,	/* type */
          2,			/* rightshift */
          2,			/* size (0=1, 1=2, 2=4, 3=0, 4=8, 5=3) */
-         9,			/* bitsize */
+         10,			/* bitsize */
          FALSE,			/* pc_relative */
          0,			/* bitpos */
          complain_overflow_dont, /* complain_on_overflow */
          bfd_elf_generic_reloc, /* special_function */
-         "R_MRISC32_ILO9X4",	/* name */
+         "R_MRISC32_ILO10X4",	/* name */
          FALSE,			/* partial_inplace */
          0,			/* src_mask */
-         0x000001ff,		/* dst_mask */
+         0x000003ff,		/* dst_mask */
          FALSE),		/* pcrel_offset */
 
   /* 21+2 bits immediate relocation.  */
@@ -265,21 +265,21 @@ struct mrisc32_reloc_map
 
 static const struct mrisc32_reloc_map mrisc32_reloc_map [] =
 {
-  { BFD_RELOC_NONE,                R_MRISC32_NONE },
-  { BFD_RELOC_32,                  R_MRISC32_32 },
-  { BFD_RELOC_MRISC32_PCREL_14,    R_MRISC32_PCREL_14 },
-  { BFD_RELOC_MRISC32_PCREL_21X4,  R_MRISC32_PCREL_21X4 },
-  { BFD_RELOC_MRISC32_PCREL_HI21,  R_MRISC32_PCREL_HI21 },
-  { BFD_RELOC_MRISC32_PCREL_LO11,  R_MRISC32_PCREL_LO11 },
-  { BFD_RELOC_MRISC32_PCREL_LO9X4, R_MRISC32_PCREL_LO9X4 },
-  { BFD_RELOC_MRISC32_I14,         R_MRISC32_I14 },
-  { BFD_RELOC_MRISC32_IHI14,       R_MRISC32_IHI14 },
-  { BFD_RELOC_MRISC32_I21,         R_MRISC32_I21 },
-  { BFD_RELOC_MRISC32_IHI21,       R_MRISC32_IHI21 },
-  { BFD_RELOC_MRISC32_IHIO21,      R_MRISC32_IHIO21 },
-  { BFD_RELOC_MRISC32_ILO11,       R_MRISC32_ILO11 },
-  { BFD_RELOC_MRISC32_ILO9X4,      R_MRISC32_ILO9X4 },
-  { BFD_RELOC_MRISC32_I21X4,       R_MRISC32_I21X4 },
+  { BFD_RELOC_NONE,                 R_MRISC32_NONE },
+  { BFD_RELOC_32,                   R_MRISC32_32 },
+  { BFD_RELOC_MRISC32_PCREL_14,     R_MRISC32_PCREL_14 },
+  { BFD_RELOC_MRISC32_PCREL_21X4,   R_MRISC32_PCREL_21X4 },
+  { BFD_RELOC_MRISC32_PCREL_HI20,   R_MRISC32_PCREL_HI20 },
+  { BFD_RELOC_MRISC32_PCREL_LO12,   R_MRISC32_PCREL_LO12 },
+  { BFD_RELOC_MRISC32_PCREL_LO10X4, R_MRISC32_PCREL_LO10X4 },
+  { BFD_RELOC_MRISC32_I14,          R_MRISC32_I14 },
+  { BFD_RELOC_MRISC32_IHI14,        R_MRISC32_IHI14 },
+  { BFD_RELOC_MRISC32_I21,          R_MRISC32_I21 },
+  { BFD_RELOC_MRISC32_IHI21,        R_MRISC32_IHI21 },
+  { BFD_RELOC_MRISC32_IHI20,        R_MRISC32_IHI20 },
+  { BFD_RELOC_MRISC32_ILO12,        R_MRISC32_ILO12 },
+  { BFD_RELOC_MRISC32_ILO10X4,      R_MRISC32_ILO10X4 },
+  { BFD_RELOC_MRISC32_I21X4,        R_MRISC32_I21X4 },
 };
 
 
