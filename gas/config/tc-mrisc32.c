@@ -79,6 +79,7 @@ static htab_t s_opc_type_a_map;
 static htab_t s_opc_type_b_map[4];
 static htab_t s_opc_type_c_map;
 static htab_t s_opc_type_d_map;
+static htab_t s_opc_type_e_map;
 
 #define MAX_OP_STR_LEN 10
 static char s_op_str[MAX_OP_STR_LEN + 1];
@@ -735,6 +736,7 @@ _emit_instruction (const char *op_str, struct mr32_operand_t *op1,
   const mrisc32_opc_info_t *opcode_b;
   const mrisc32_opc_info_t *opcode_c;
   const mrisc32_opc_info_t *opcode_d;
+  const mrisc32_opc_info_t *opcode_e;
   const mrisc32_opc_info_t *opcode;
   uint32_t iword = 0u;
   uint32_t vec_mode;
@@ -757,14 +759,15 @@ _emit_instruction (const char *op_str, struct mr32_operand_t *op1,
     }
   opcode_c = (mrisc32_opc_info_t *) str_hash_find (s_opc_type_c_map, op_str);
   opcode_d = (mrisc32_opc_info_t *) str_hash_find (s_opc_type_d_map, op_str);
+  opcode_e = (mrisc32_opc_info_t *) str_hash_find (s_opc_type_e_map, op_str);
   if (opcode_a == NULL && opcode_b == NULL && opcode_c == NULL &&
-      opcode_d == NULL)
+      opcode_d == NULL && opcode_e == NULL)
     {
       as_bad (_ ("unknown opcode %s"), op_str);
       return;
     }
 
-  /* Determine the format (A, B, C or D) based on the operand types.  */
+  /* Determine the format (A, B, C, D or E) based on the operand types.  */
   if (opcode_a && ((_is_reg (op1) && _is_reg (op2) && _is_reg (op3))))
     {
       opcode = opcode_a;
@@ -782,6 +785,11 @@ _emit_instruction (const char *op_str, struct mr32_operand_t *op1,
 	   (_is_reg (op1) && _is_imm (op2) && op3->type == MR32_OT_NONE))
     {
       opcode = opcode_d;
+    }
+  else if (opcode_e &&
+	   (_is_reg (op1) && _is_imm (op2) && op3->type == MR32_OT_NONE))
+    {
+      opcode = opcode_e;
     }
   else
     {
@@ -948,6 +956,8 @@ _emit_instruction (const char *op_str, struct mr32_operand_t *op1,
 
     case MR32_FMT_D:
       {
+	/* TODO(m): Break into D + E!!!!!  */
+
 	/* Check that this is a pure scalar operation.  */
 	if (op1->type == MR32_OT_VREG)
 	  {
@@ -1040,10 +1050,10 @@ _emit_instruction (const char *op_str, struct mr32_operand_t *op1,
 	      }
 	    break;
 
-	  case MR32_MODE_PCREL21x4:
+	  case MR32_MODE_PCREL18x4:
 	    if (reloc_operand->modifier == MR32_MOD_NONE)
 	      {
-		reloc_type = BFD_RELOC_MRISC32_PCREL_21X4;
+		reloc_type = BFD_RELOC_MRISC32_PCREL_18X4;
 		pc_rel = 1;
 	      }
 	    else
@@ -1262,11 +1272,20 @@ md_begin (void)
 
   /* Insert type D opcodes into a hash table.  */
   s_opc_type_d_map = str_htab_create ();
-  for (count = 0; count < 16; ++count)
+  for (count = 0; count < 7; ++count)
     {
       const mrisc32_opc_info_t *opcode = &mrisc32_opc_type_d_info[count];
       if (opcode->format != MR32_FMT_BAD)
 	str_hash_insert (s_opc_type_d_map, opcode->name, (void *) opcode, 0);
+    }
+
+  /* Insert type E opcodes into a hash table.  */
+  s_opc_type_e_map = str_htab_create ();
+  for (count = 0; count < 8; ++count)
+    {
+      const mrisc32_opc_info_t *opcode = &mrisc32_opc_type_e_info[count];
+      if (opcode->format != MR32_FMT_BAD)
+	str_hash_insert (s_opc_type_e_map, opcode->name, (void *) opcode, 0);
     }
 
   bfd_set_arch_mach (stdoutput, TARGET_ARCH, 0);
@@ -1473,6 +1492,12 @@ md_apply_fix (fixS *fixP, valueT *valP, segT seg ATTRIBUTE_UNUSED)
     case BFD_RELOC_MRISC32_PCREL_LO10X4:
       word = (uint32_t) bfd_getl32 (buf);
       word |= (uint32_t) ((val >> 2) & 0x3ff);
+      bfd_putl32 ((bfd_vma) word, buf);
+      break;
+
+    case BFD_RELOC_MRISC32_PCREL_18X4:
+      word = (uint32_t) bfd_getl32 (buf);
+      word |= (uint32_t) ((val >> 2) & 0x3ffff);
       bfd_putl32 ((bfd_vma) word, buf);
       break;
 

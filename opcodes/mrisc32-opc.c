@@ -498,30 +498,33 @@ const mrisc32_opc_info_t mrisc32_opc_type_c_info[48] =
   { "?",        MR32_VC_NA,  MR32_VC_NA,  MR32_FT_NONE,  0x2f, 0, 0, 0 },
 };
 
-const mrisc32_opc_info_t mrisc32_opc_type_d_info[16] =
+const mrisc32_opc_info_t mrisc32_opc_type_d_info[7] =
 {
-  /* Conditional branches.  */
-  { "bz",       MR32_VC_NA,  MR32_VC_NA,  MR32_FT_NONE,  0x00, 0, MR32_FMT_D, MR32_MODE_PCREL21x4 },
-  { "bnz",      MR32_VC_NA,  MR32_VC_NA,  MR32_FT_NONE,  0x01, 0, MR32_FMT_D, MR32_MODE_PCREL21x4 },
-  { "bs",       MR32_VC_NA,  MR32_VC_NA,  MR32_FT_NONE,  0x02, 0, MR32_FMT_D, MR32_MODE_PCREL21x4 },
-  { "bns",      MR32_VC_NA,  MR32_VC_NA,  MR32_FT_NONE,  0x03, 0, MR32_FMT_D, MR32_MODE_PCREL21x4 },
-  { "blt",      MR32_VC_NA,  MR32_VC_NA,  MR32_FT_NONE,  0x04, 0, MR32_FMT_D, MR32_MODE_PCREL21x4 },
-  { "bge",      MR32_VC_NA,  MR32_VC_NA,  MR32_FT_NONE,  0x05, 0, MR32_FMT_D, MR32_MODE_PCREL21x4 },
-  { "ble",      MR32_VC_NA,  MR32_VC_NA,  MR32_FT_NONE,  0x06, 0, MR32_FMT_D, MR32_MODE_PCREL21x4 },
-  { "bgt",      MR32_VC_NA,  MR32_VC_NA,  MR32_FT_NONE,  0x07, 0, MR32_FMT_D, MR32_MODE_PCREL21x4 },
-
   /* Unconditional branches.  */
-  { "j",        MR32_VC_NA,  MR32_VC_NA,  MR32_FT_NONE,  0x08, 0, MR32_FMT_D, MR32_MODE_REGREL21x4 },
-  { "jl",       MR32_VC_NA,  MR32_VC_NA,  MR32_FT_NONE,  0x09, 0, MR32_FMT_D, MR32_MODE_REGREL21x4 },
-
-  /* Load immediate.  */
-  { "ldli",     MR32_VC_NA,  MR32_VC_NA,  MR32_FT_NONE,  0x0a, 0, MR32_FMT_D, MR32_MODE_IMM21 },
-  { "ldhi",     MR32_VC_NA,  MR32_VC_NA,  MR32_FT_NONE,  0x0b, 0, MR32_FMT_D, MR32_MODE_IMM21HI },
-  { "?",        MR32_VC_NA,  MR32_VC_NA,  MR32_FT_NONE,  0x0c, 0, 0, 0 },
+  { "j",        MR32_VC_NA,  MR32_VC_NA,  MR32_FT_NONE,  0x00, 0, MR32_FMT_D, MR32_MODE_REGREL21x4 },
+  { "jl",       MR32_VC_NA,  MR32_VC_NA,  MR32_FT_NONE,  0x01, 0, MR32_FMT_D, MR32_MODE_REGREL21x4 },
 
   /* PC hi.  */
-  { "addpchi",  MR32_VC_NA,  MR32_VC_NA,  MR32_FT_NONE,  0x0d, 0, MR32_FMT_D, MR32_MODE_IMM21HI },
+  { "addpchi",  MR32_VC_NA,  MR32_VC_NA,  MR32_FT_NONE,  0x02, 0, MR32_FMT_D, MR32_MODE_IMM21HI },
+  { "?",        MR32_VC_NA,  MR32_VC_NA,  MR32_FT_NONE,  0x03, 0, 0, 0 },
 
-  { "?",        MR32_VC_NA,  MR32_VC_NA,  MR32_FT_NONE,  0x0e, 0, 0, 0 },
-  { "?",        MR32_VC_NA,  MR32_VC_NA,  MR32_FT_NONE,  0x0f, 0, 0, 0 },
+  /* Load immediate.  */
+  { "ldli",     MR32_VC_NA,  MR32_VC_NA,  MR32_FT_NONE,  0x04, 0, MR32_FMT_D, MR32_MODE_IMM21 },
+  { "ldhi",     MR32_VC_NA,  MR32_VC_NA,  MR32_FT_NONE,  0x05, 0, MR32_FMT_D, MR32_MODE_IMM21HI },
+
+  { "?",        MR32_VC_NA,  MR32_VC_NA,  MR32_FT_NONE,  0x06, 0, 0, 0 },
 };
+
+const mrisc32_opc_info_t mrisc32_opc_type_e_info[8] =
+{
+  /* Conditional branches.  */
+  { "bz",       MR32_VC_NA,  MR32_VC_NA,  MR32_FT_NONE,  0x00, 0, MR32_FMT_E, MR32_MODE_PCREL18x4 },
+  { "bnz",      MR32_VC_NA,  MR32_VC_NA,  MR32_FT_NONE,  0x01, 0, MR32_FMT_E, MR32_MODE_PCREL18x4 },
+  { "bs",       MR32_VC_NA,  MR32_VC_NA,  MR32_FT_NONE,  0x02, 0, MR32_FMT_E, MR32_MODE_PCREL18x4 },
+  { "bns",      MR32_VC_NA,  MR32_VC_NA,  MR32_FT_NONE,  0x03, 0, MR32_FMT_E, MR32_MODE_PCREL18x4 },
+  { "blt",      MR32_VC_NA,  MR32_VC_NA,  MR32_FT_NONE,  0x04, 0, MR32_FMT_E, MR32_MODE_PCREL18x4 },
+  { "bge",      MR32_VC_NA,  MR32_VC_NA,  MR32_FT_NONE,  0x05, 0, MR32_FMT_E, MR32_MODE_PCREL18x4 },
+  { "ble",      MR32_VC_NA,  MR32_VC_NA,  MR32_FT_NONE,  0x06, 0, MR32_FMT_E, MR32_MODE_PCREL18x4 },
+  { "bgt",      MR32_VC_NA,  MR32_VC_NA,  MR32_FT_NONE,  0x07, 0, MR32_FMT_E, MR32_MODE_PCREL18x4 },
+};
+

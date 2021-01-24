@@ -78,6 +78,12 @@ _get_imm14 (const uint32_t iw)
 }
 
 static int32_t
+_get_imm18 (const uint32_t iw)
+{
+  return (int32_t) ((iw & 0x0003ffff) | ((iw & 0x00020000) ? 0xfffc0000 : 0));
+}
+
+static int32_t
 _get_imm21 (const uint32_t iw)
 {
   return (int32_t) ((iw & 0x001fffff) | ((iw & 0x00100000) ? 0xffe00000 : 0));
@@ -377,17 +383,13 @@ print_insn_mrisc32 (bfd_vma addr, struct disassemble_info *info)
       opcode = &mrisc32_opc_type_d_info[(iword >> 26) & 15];
       enum mr32_mode mode = opcode->mode;
 
-      /* REGREL & reg = PC -> PCREL  */
-      if (mode == MR32_MODE_REGREL21x4 && _get_reg1 (iword) == 31)
-          mode = MR32_MODE_PCREL21x4;
-
       _print_full_mnemonic (info, opcode->name, _get_suffix (0, 0, 0));
       arg1 = scalar_regs[_get_reg1 (iword)];
       switch (mode)
 	{
-	case MR32_MODE_PCREL21x4:
+	case MR32_MODE_PCREL18x4:
 	  fpr (stream, "%s, #0x", arg1);
-	  info->print_address_func ((bfd_vma) (addr + _get_imm21 (iword) * 4),
+	  info->print_address_func ((bfd_vma) (addr + _get_imm18 (iword) * 4),
 				    info);
 	  break;
 	case MR32_MODE_REGREL21x4:

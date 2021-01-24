@@ -30,7 +30,8 @@ enum mr32_fmt
   MR32_FMT_A,
   MR32_FMT_B,
   MR32_FMT_C,
-  MR32_FMT_D
+  MR32_FMT_D,
+  MR32_FMT_E
 };
 
 /* Instruction modes.  */
@@ -42,8 +43,8 @@ enum mr32_mode
   MR32_MODE_IMM14,
   MR32_MODE_IMM21,
   MR32_MODE_IMM21HI,
-  MR32_MODE_PCREL21x4,
   MR32_MODE_REGREL21x4,
+  MR32_MODE_PCREL18x4,
 };
 
 /* Flavor field interpretation.  */
