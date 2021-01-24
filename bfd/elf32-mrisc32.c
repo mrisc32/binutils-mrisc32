@@ -74,6 +74,21 @@ static reloc_howto_type elf_mrisc32_howto_table_rel[] =
          0x00003fff,		/* dst_mask */
          TRUE),			/* pcrel_offset */
 
+  /* 18+2 bit PC relative relocation.  */
+  HOWTO (R_MRISC32_PCREL_18X4,	/* type */
+         2,			/* rightshift */
+         2,			/* size (0=1, 1=2, 2=4, 3=0, 4=8, 5=3) */
+         18,			/* bitsize */
+         TRUE,			/* pc_relative */
+         0,			/* bitpos */
+         complain_overflow_signed, /* complain_on_overflow */
+         bfd_elf_generic_reloc, /* special_function */
+         "R_MRISC32_PCREL_18X4", /* name */
+         FALSE,			/* partial_inplace */
+         0,			/* src_mask */
+         0x0003ffff,		/* dst_mask */
+         TRUE),			/* pcrel_offset */
+
   /* 21+2 bit PC relative relocation.  */
   HOWTO (R_MRISC32_PCREL_21X4,	/* type */
          2,			/* rightshift */
@@ -268,6 +283,7 @@ static const struct mrisc32_reloc_map mrisc32_reloc_map [] =
   { BFD_RELOC_NONE,                 R_MRISC32_NONE },
   { BFD_RELOC_32,                   R_MRISC32_32 },
   { BFD_RELOC_MRISC32_PCREL_14,     R_MRISC32_PCREL_14 },
+  { BFD_RELOC_MRISC32_PCREL_18X4,   R_MRISC32_PCREL_18X4 },
   { BFD_RELOC_MRISC32_PCREL_21X4,   R_MRISC32_PCREL_21X4 },
   { BFD_RELOC_MRISC32_PCREL_HI20,   R_MRISC32_PCREL_HI20 },
   { BFD_RELOC_MRISC32_PCREL_LO12,   R_MRISC32_PCREL_LO12 },

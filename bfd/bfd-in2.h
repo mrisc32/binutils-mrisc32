@@ -6280,6 +6280,7 @@ assembler and not (currently) written to any object files.  */
 
 /* MRISC32 Relocations.  */
   BFD_RELOC_MRISC32_PCREL_14,
+  BFD_RELOC_MRISC32_PCREL_18X4,
   BFD_RELOC_MRISC32_PCREL_21X4,
   BFD_RELOC_MRISC32_PCREL_HI20,
   BFD_RELOC_MRISC32_PCREL_LO12,
