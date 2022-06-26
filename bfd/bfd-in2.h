@@ -113,7 +113,9 @@ typedef int64_t bfd_signed_vma;
 typedef uint64_t bfd_size_type;
 typedef uint64_t symvalue;
 
-#if BFD_HOST_64BIT_LONG
+#if defined(__APPLE__) && (defined(__amd64__) || defined(__aarch64__))
+#define BFD_VMA_FMT "ll"
+#elif BFD_HOST_64BIT_LONG
 #define BFD_VMA_FMT "l"
 #elif defined (__MSVCRT__)
 #define BFD_VMA_FMT "I64"
