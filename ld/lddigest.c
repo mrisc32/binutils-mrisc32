@@ -36,6 +36,19 @@
 #include "ldmisc.h"
 #include "lddigest.h"
 
+#if defined(_WIN32) || defined(_WIN64)
+/* HACK: Fix for missing strndup on Windows / mingw  */
+static char *
+win_strndup (const char * s, size_t n)
+{
+  char *s2 = (char*)malloc(n + 1);
+  s2[n] = 0;
+  return memcpy (s2, s, n);
+}
+
+#define strndup(s, n) win_strndup((s), (n))
+#endif
+
 /* CRC calculation on output section */
 asection *text_section;
 unsigned char *text_contents = NULL;
