@@ -1,3 +1,5 @@
+## This repo has moved to: https://gitlab.com/mrisc32/binutils-mrisc32
+
 # binutils for MRISC32
 
 This is a fork of [binutils-gdb](https://sourceware.org/git/gitweb.cgi?p=binutils-gdb.git) with support for [MRISC32](https://github.com/mrisc32/mrisc32).
